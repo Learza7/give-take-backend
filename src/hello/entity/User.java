@@ -26,10 +26,11 @@ public class User {
     private String last_name;
 
     @Column(nullable = false)
-    private int points;
+    private int points = 10;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private Set<Article> articles = new HashSet<Article>();
+
 
     public Long getId() {
         return id;
