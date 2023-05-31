@@ -11,7 +11,6 @@ import java.util.List;
 
 import javax.ejb.Stateless;
 import javax.persistence.*;
-import javax.servlet.http.HttpServletRequest;
 
 @Stateless
 @Path("/users")
@@ -43,14 +42,15 @@ public class UserController {
             return Response.status(Response.Status.BAD_REQUEST).entity("A user with this email already exists.").build();
         } else {
             entityManager.persist(user);
-            return Response.status(Response.Status.CREATED).entity(user).build();
+            entityManager.flush();  // Flush to get the ID of the newly created user
+            return Response.status(Response.Status.CREATED).entity(user.getId()).build();
         }
     }
     
     @Path("/login")
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response loginUser(User user, @Context HttpServletRequest req) {
+    public Response loginUser(User user) {
         // Check if the user exists
         List<User> existingUsers = entityManager.createQuery("SELECT u FROM User u WHERE u.email = :email AND u.password = :password", User.class)
                 .setParameter("email", user.getEmail())
@@ -61,20 +61,26 @@ public class UserController {
             // No user with this email/password was found
             return Response.status(Response.Status.UNAUTHORIZED).entity("Invalid email/password.").build();
         } else {
-            // The user was found, start a new session
-            req.getSession(true);
-            return Response.ok(existingUsers.get(0)).build();
+            // The user was found, return the user ID
+            return Response.ok(existingUsers.get(0).getId()).build();
         }
     }
 
-    
-    
     @Path("/logout")
     @POST
-    public Response logoutUser(@Context HttpServletRequest req) {
-        req.getSession().invalidate();
+    public Response logoutUser() {
+        // In this case, we don't invalidate the session as we're not using it
         return Response.ok().build();
     }
-
+    
+    @Path("/me")
+    @GET
+    public Response getUser(@HeaderParam("X-User-ID") Long id) {
+        User user = entityManager.find(User.class, id);
+        if (user == null) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+        return Response.ok(user).build();
+    }
 
 }
