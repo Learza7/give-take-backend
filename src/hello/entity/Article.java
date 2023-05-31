@@ -22,7 +22,7 @@ public class Article {
     //@Column(nullable = false)
     //private String region;
     
-    @JsonIgnore
+    
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id")
     private User user;
