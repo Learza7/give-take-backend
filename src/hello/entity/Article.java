@@ -3,6 +3,8 @@ package hello.entity;
 
 import javax.persistence.*;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;;
+
 @Entity
 @Table(name = "articles")
 public class Article {
@@ -17,13 +19,22 @@ public class Article {
     @Column(nullable = false)
     private String description;
 
-    @Column(nullable = false)
-    private String region;
-
-    @ManyToOne(fetch = FetchType.LAZY)
+    //@Column(nullable = false)
+    //private String region;
+    
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id")
     private User user;
-
+    
+    @Column(nullable = false)
+    private String imageUrl;
+    
+    @Column(nullable = false)
+    private int points;
+    
+    
+    
     public void setId(Long id) {
         this.id = id;
     }
@@ -48,13 +59,13 @@ public class Article {
         this.description = description;
     }
 
-    public String getRegion() {
+    /*public String getRegion() {
         return region;
     }
 
     public void setRegion(String region) {
         this.region = region;
-    }
+    }*/
 
     public User getUser() {
         return user;
@@ -62,6 +73,20 @@ public class Article {
 
     public void setUser(User user) {
         this.user = user;
+    }
+    
+    public void setImageUrl(String url) {
+    	this.imageUrl = url;
+    }
+    public String getImageUrl() {
+    	return this.imageUrl;
+    }
+    
+    public void setPoints(int p) {
+    	this.points = p;
+    }
+    public int getPoints() {
+    	return this.points;
     }
     
     // Autres getters et setters

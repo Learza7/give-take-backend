@@ -2,6 +2,9 @@ package hello.entity;
 
 
 import javax.persistence.*;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.util.HashSet;
 import java.util.Set;
 
@@ -27,7 +30,8 @@ public class User {
 
     @Column(nullable = false)
     private int points = 10;
-
+    
+    @JsonIgnore
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private Set<Article> articles = new HashSet<Article>();
 
